@@ -9,7 +9,7 @@ spec:
   source:
     repoURL: 'https://github.com/Rufus100Procent/LearningArgoCd.git'
     targetRevision: HEAD
-    path: ./mainfest.yml
+    path: mainfest.yml
 
   destination:
     server: 'https://kubernetes.default.svc'
