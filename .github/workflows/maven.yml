@@ -30,7 +30,7 @@ jobs:
         run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
       - name: Build the Docker image
-        run: docker build -t stykle/learningacrgocd:v0 .
+        run: docker build -t stykle/learningacrgocd:v0.2.0 .
 
       - name: Push the Docker image
-        run: docker push stykle/learningacrgocd:v0
+        run: docker push stykle/learningacrgocd:v0.2.0
