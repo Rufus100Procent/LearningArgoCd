@@ -16,6 +16,6 @@ spec:
     spec:
       containers:
         - name: demo-app-container
-          image: stykle/learningacrgocd:v0
+          image: stykle/learningacrgocd:v0.2.0
           ports:
             - containerPort: 8080
