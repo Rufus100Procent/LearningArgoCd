@@ -1,0 +1,21 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: demo-app
+  namespace: argocd
+spec:
+  project: default
+
+  source:
+    repoURL: 'https://github.com/Rufus100Procent/LearningArgoCd.git'
+    targetRevision: HEAD
+    path: master
+
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: myapp
+
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
