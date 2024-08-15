@@ -8,7 +8,7 @@ metadata:
     argocd-image-updater.argoproj.io/image-list: demo-app-container=stykle/learningacrgocd
     argocd-image-updater.argoproj.io/demo-app-container.update-strategy: latest
 spec:
-  replicas: 3
+  replicas: 4
   selector:
     matchLabels:
       app: myapp
@@ -19,6 +19,6 @@ spec:
     spec:
       containers:
         - name: demo-app-container
-          image: stykle/learningacrgocd:v0.3.0
+          image: stykle/learningacrgocd:v0.2.0
           ports:
             - containerPort: 8080
