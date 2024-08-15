@@ -19,3 +19,4 @@ spec:
     automated:
       prune: true
       selfHeal: true
+      allowEmpty: false  # Optional: Prevents auto-syncing when there are no changes

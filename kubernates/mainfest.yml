@@ -4,6 +4,9 @@ metadata:
   name: myapp
   labels:
     app: myapp
+  annotations:
+    argocd-image-updater.argoproj.io/image-list: demo-app-container=stykle/learningacrgocd
+    argocd-image-updater.argoproj.io/demo-app-container.update-strategy: latest
 spec:
   replicas: 3
   selector:
