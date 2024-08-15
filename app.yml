@@ -6,6 +6,16 @@ metadata:
 spec:
   project: default
 
+  template:
+    metadata:
+      name: myapp
+      annotations:
+        argocd-image-updater.argoproj.io/image-list: myappr=stykle/learningacrgocd
+        argocd-image-updater.argoproj.io/myalias.force-update: true
+        argocd-image-updater.argoproj.io/write-back-method: git
+      finalizers:
+        - resources-finalizer.argocd.argoproj.io
+
   source:
     repoURL: 'https://github.com/Rufus100Procent/LearningArgoCd.git'
     targetRevision: HEAD
