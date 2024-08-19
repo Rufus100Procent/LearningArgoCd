@@ -23,14 +23,36 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
+      - name: Extract Semantic Version from Git
+        id: extract_version
+        run: |
+          # Check if there are any tags in the repository
+            if git describe --tags --abbrev=0 >/dev/null 2>&1; then
+            VERSION=$(git describe --tags --abbrev=0 | grep -oE '^[vVrR]?[3-4]\.[0-9]+\.[0-9]+')
+            if [ -z "$VERSION" ]; then
+            echo "No valid semantic version (3.x.x or 4.x.x) found in the latest tag. Skipping Docker build and push."
+            exit 0
+            fi
+            VERSION=$(echo $VERSION | sed 's/^[vVrR]//')
+            echo "VERSION=$VERSION" >> $GITHUB_ENV
+            else
+            echo "No tags found in the repository. Skipping Docker build and push."
+            exit 0
+            fi
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+
       - name: Log in to Docker Hub
+        if: env.VERSION
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
       - name: Build the Docker image
-        run: docker build -t stykle/learningacrgocd:v0.2.0 .
+        if: env.VERSION
+        run: docker build -t stykle/learningacrgocd:${{ env.VERSION }} .
 
       - name: Push the Docker image
-        run: docker push stykle/learningacrgocd:v0.2.0
+        if: env.VERSION
+        run: docker push stykle/learningacrgocd:${{ env.VERSION }}
