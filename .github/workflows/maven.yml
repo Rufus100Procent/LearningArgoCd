@@ -23,14 +23,15 @@ jobs:
       - name: Build with Maven
         run: mvn -B package --file pom.xml
 
-      - name: Extract Version from Commit Message
+      - name: Extract Semantic Version from Git
         id: extract_version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE '^[3-4]\.[0-9]+\.[0-9]+')
+          VERSION=$(git describe --tags --abbrev=0 | grep -oE '^[vVrR]?[3-4]\.[0-9]+\.[0-9]+')
           if [ -z "$VERSION" ]; then
-            echo "No valid semantic version (3.x.x or 4.x.x) found in the commit message. Skipping Docker build and push."
+            echo "No valid semantic version (3.x.x or 4.x.x) found in the latest tag. Skipping Docker build and push."
             exit 0
           fi
+          VERSION=$(echo $VERSION | sed 's/^[vVrR]//')
           echo "VERSION=$VERSION" >> $GITHUB_ENV
         shell: bash
 
