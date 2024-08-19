@@ -20,35 +20,27 @@ jobs:
           distribution: 'temurin'
           cache: maven
 
-      - name: Extract Semantic Version from Commit or Tag
+      - name: Extract Semantic Version from Commit Message
         id: extract_version
         run: |
-          # Check for the latest tag
-          TAG=$(git describe --tags --abbrev=0 2>/dev/null || echo "")
-          
-          # If no tag exists, try to extract from commit message and tag it
-          if [[ -z "$TAG" ]]; then
-            COMMIT_MSG=$(git log -1 --pretty=%B)
-            VERSION=$(echo $COMMIT_MSG | grep -oE '^[3-4]\.[0-9]+\.[0-9]+')
-          
-            if [[ -n "$VERSION" ]]; then
-              git tag -a "v$VERSION" -m "Version $VERSION"
-              git push origin "v$VERSION"
-              echo "Tagged the commit with v$VERSION"
-              echo "VERSION=$VERSION" >> $GITHUB_ENV
-            else
-              echo "No valid version found in commit message. Skipping Docker build and push."
-              exit 0
-            fi
-          else
-            VERSION=$(echo $TAG | grep -oE '^[vVrR]?[3-4]\.[0-9]+\.[0-9]+')
-            if [[ -z "$VERSION" ]]; then
-              echo "No valid semantic version (3.x.x or 4.x.x) found in the latest tag. Skipping Docker build and push."
-              exit 0
-            fi
-            VERSION=$(echo $VERSION | sed 's/^[vVrR]//')
-            echo "VERSION=$VERSION" >> $GITHUB_ENV
+          # Extract version from commit message
+          COMMIT_MSG=$(git log -1 --pretty=%B)
+          VERSION=$(echo $COMMIT_MSG | grep -oE '^[3-9]\.[0-9]+\.[0-9]+')
+
+          # Check if a valid version was found
+          if [[ -z "$VERSION" ]]; then
+            echo "No valid semantic version (3.x.x or higher) found in the commit message. Skipping Docker build and push."
+            exit 0
           fi
+
+          # Set the version as an environment variable
+          echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
+
+      - name: Set Git User for Tagging
+        run: |
+          git config --global user.email "you@example.com"
+          git config --global user.name "Your Name"
         shell: bash
 
       - name: Log in to Docker Hub
