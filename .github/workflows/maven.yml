@@ -26,20 +26,25 @@ jobs:
       - name: Extract Version from Commit Message
         id: extract_version
         run: |
-          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE '[0-9]+\.[0-9]+\.[0-9]+')
+          VERSION=$(echo "${{ github.event.head_commit.message }}" | grep -oE '^[3-4]\.[0-9]+\.[0-9]+')
+          if [ -z "$VERSION" ]; then
+            echo "No valid semantic version (3.x.x or 4.x.x) found in the commit message. Skipping Docker build and push."
+            exit 0
+          fi
           echo "VERSION=$VERSION" >> $GITHUB_ENV
+        shell: bash
 
       - name: Log in to Docker Hub
-        if: env.VERSION && startsWith(env.VERSION, '3.') || startsWith(env.VERSION, '4.')
+        if: env.VERSION
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
           DOCKER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
         run: echo $DOCKER_PASSWORD | docker login -u $DOCKER_USERNAME --password-stdin
 
       - name: Build the Docker image
-        if: env.VERSION && startsWith(env.VERSION, '3.') || startsWith(env.VERSION, '4.')
+        if: env.VERSION
         run: docker build -t stykle/learningacrgocd:${{ env.VERSION }} .
 
       - name: Push the Docker image
-        if: env.VERSION && startsWith(env.VERSION, '3.') || startsWith(env.VERSION, '4.')
+        if: env.VERSION
         run: docker push stykle/learningacrgocd:${{ env.VERSION }}
