@@ -14,7 +14,7 @@ public class Main {
     }
 
 
-    @GetMapping("/public")
+    @GetMapping("/publaaaic")
     public String hello() {
         return "Hello World";
     }
